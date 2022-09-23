@@ -1,5 +1,6 @@
 package com.codebusters.bankaccountkata.api.controller;
 
+import com.codebusters.bankaccountkata.domain.model.History;
 import com.codebusters.bankaccountkata.domain.model.Transaction;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class BankAccountController {
     }
 
     @PostMapping(path = "/deposit", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> moneyDeposit(@RequestBody Transaction transaction){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<History> moneyDeposit(@RequestBody Transaction transaction){
+        return ResponseEntity.ok(new History());
     }
 }
