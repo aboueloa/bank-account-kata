@@ -27,6 +27,23 @@ public class BankAccountAdapter implements BankAccountPort {
 
     @Override
     public History save(Transaction transaction) {
-        return null;
+        LOCK.lock();
+        History history;
+        try {
+            accountRepository.deposit(transaction.getAmount(), transaction.getClientId());
+            int balance = accountRepository.findByAccountId(transaction.getClientId()).getBalance();
+            history = History.builder()
+                    .amount(transaction.getAmount())
+                    .balance(balance)
+                    .operationDate(Instant.now())
+                    .clientId(transaction.getClientId())
+                    .operation(Operation.DEPOSIT)
+                    .build();
+            historyRepository.save(history);
+        }
+        finally {
+            LOCK.unlock();
+        }
+        return history;
     }
 }
