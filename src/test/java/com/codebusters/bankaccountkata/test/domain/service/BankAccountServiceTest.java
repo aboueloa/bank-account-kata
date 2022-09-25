@@ -23,6 +23,7 @@ public class BankAccountServiceTest {
 
     @InjectMocks
     private BankAccountService bankAccountService;
+
     private static final Instant NOW = Instant.now();
     private static final int AMOUNT = 1000;
     private static final String CLIENT_ID = "clientId";
