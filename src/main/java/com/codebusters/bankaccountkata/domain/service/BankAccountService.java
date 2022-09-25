@@ -11,6 +11,7 @@ public class BankAccountService {
     private final BankAccountPort bankAccountPort;
 
     public History makeDeposit(Transaction transaction) {
-        return null;
+        Objects.requireNonNull(transaction.getClientId(), "client id shouldn't be null");
+        return bankAccountPort.save(transaction);
     }
 }
