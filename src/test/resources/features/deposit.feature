@@ -1,6 +1,6 @@
 Feature: deposit feature
   Scenario: A client make a deposit to his account
-    Given the following transaction
+    Given the following operation
       | clientId         | amount |
       | ayman.aboueloula | 1000   |
     When the user make a deposit
