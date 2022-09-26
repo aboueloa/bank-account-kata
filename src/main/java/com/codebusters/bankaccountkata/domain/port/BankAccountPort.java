@@ -6,4 +6,6 @@ import com.codebusters.bankaccountkata.domain.model.Transaction;
 
 public interface BankAccountPort {
     Operation save(Transaction transaction) throws BankAccountDepositException;
+
+    Operation withdrawMoney(Transaction transactionWhenClientIdNotNull);
 }

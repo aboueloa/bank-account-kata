@@ -51,4 +51,9 @@ public class BankAccountAdapter implements BankAccountPort {
         }
         return operation;
     }
+
+    @Override
+    public Operation withdrawMoney(Transaction transactionWhenClientIdNotNull) {
+        return null;
+    }
 }
