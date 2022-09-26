@@ -36,6 +36,9 @@ public class BankAccountController {
     @PostMapping(path= "/withdrawal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Operation> moneyWithdrawal(@Valid @RequestBody OperationRequest operationRequest) {
         log.info("withdrawal of money");
-        return ResponseEntity.ok(new Operation());
+        return ResponseEntity.ok(bankAccountService.withdrawal(Transaction.builder()
+                .amount(operationRequest.getAmount())
+                .clientId(operationRequest.getClientId())
+                .build()));
     }
 }
