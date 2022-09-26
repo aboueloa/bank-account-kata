@@ -12,4 +12,8 @@ public class BankAccountService {
     public Operation makeDeposit(Transaction transaction) throws BankAccountDepositException {
         return bankAccountPort.save(transaction);
     }
+
+    public Operation withdrawal(Transaction transaction) {
+        return null;
+    }
 }

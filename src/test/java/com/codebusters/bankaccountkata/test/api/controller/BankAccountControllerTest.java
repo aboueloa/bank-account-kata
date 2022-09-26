@@ -6,6 +6,7 @@ import com.codebusters.bankaccountkata.domain.model.Operation;
 import com.codebusters.bankaccountkata.domain.model.OperationType;
 import com.codebusters.bankaccountkata.domain.model.Transaction;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class BankAccountControllerTest {
     private static final String API_BANK_ACCOUNT_DEPOSIT = "/api/bank-operation/deposit";
+
+    private static final String API_BANK_ACCOUNT_WITHDRAWAL = "/api/bank-operation/withdrawal";
+
     private static final String CLIENT_ID = "clientId";
     private static final int AMOUNT = 100;
+    private static final Operation DEPOSIT_OPERATION = Operation.builder().operation(OperationType.DEPOSIT).amount(AMOUNT).build();
+
+    private static final Operation WITHDRAWAL_OPERATION = Operation.builder().operation(OperationType.WITHDRAWAL).amount(AMOUNT).build();
+
     private static final Transaction TRANSACTION = new Transaction(CLIENT_ID, AMOUNT);
     @MockBean
     private BankAccountService bankAccountService;
@@ -33,6 +42,9 @@ public class BankAccountControllerTest {
     private BankAccountController bankAccountController;
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     public void when_post_request_to_deposit_and_invalid_operationRequest() throws Exception {
@@ -58,6 +70,20 @@ public class BankAccountControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content()
                         .contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    public void when_post_request_to_withdrawal() throws Exception {
+        when(bankAccountService.withdrawal(TRANSACTION)).thenReturn(WITHDRAWAL_OPERATION);
+        String operationRequest = "{\"clientId\": \"clientId\", \"amount\" : 100}";
+        var mockRes = mockMvc.perform(MockMvcRequestBuilders.post(API_BANK_ACCOUNT_WITHDRAWAL)
+                        .content(operationRequest)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        String actualRes = mockRes.getResponse().getContentAsString();
+        String expectedRes = objectMapper.writeValueAsString(WITHDRAWAL_OPERATION);
+        assertThat(expectedRes).isEqualToIgnoringWhitespace(actualRes);
     }
 
 }

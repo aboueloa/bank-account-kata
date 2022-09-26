@@ -24,12 +24,18 @@ public class BankAccountController {
         this.bankAccountService = bankAccountService;
     }
 
-    @PostMapping(path = "/deposit", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/deposit", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Operation> moneyDeposit(@Valid @RequestBody OperationRequest operationRequest) throws BankAccountDepositException {
         log.info("Making a deposit");
         return ResponseEntity.ok(bankAccountService.makeDeposit(Transaction.builder()
                 .amount(operationRequest.getAmount())
                 .clientId(operationRequest.getClientId())
                 .build()));
+    }
+
+    @PostMapping(path= "/withdrawal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Operation> moneyWithdrawal(@Valid @RequestBody OperationRequest operationRequest) {
+        log.info("withdrawal of money");
+        return ResponseEntity.ok(new Operation());
     }
 }
