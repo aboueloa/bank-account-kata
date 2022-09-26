@@ -1,7 +1,9 @@
 package com.codebusters.bankaccountkata.api.controller;
 
-import com.codebusters.bankaccountkata.api.controller.dto.OperationRequest;
+import com.codebusters.bankaccountkata.api.dto.OperationRequest;
+import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.model.Transaction;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +25,11 @@ public class BankAccountController {
     }
 
     @PostMapping(path = "/deposit", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Operation> moneyDeposit(@Valid @RequestBody OperationRequest operationRequest){
+    public ResponseEntity<Operation> moneyDeposit(@Valid @RequestBody OperationRequest operationRequest) throws BankAccountDepositException {
         log.info("Making a deposit");
-        return ResponseEntity.ok(bankAccountService.makeDeposit(operationRequest));
+        return ResponseEntity.ok(bankAccountService.makeDeposit(Transaction.builder()
+                .amount(operationRequest.getAmount())
+                .clientId(operationRequest.getClientId())
+                .build()));
     }
 }

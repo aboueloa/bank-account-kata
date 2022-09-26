@@ -1,7 +1,8 @@
 package com.codebusters.bankaccountkata.persistence.adapter;
 
-import com.codebusters.bankaccountkata.domain.model.History;
+import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.model.OperationType;
 import com.codebusters.bankaccountkata.domain.model.Transaction;
 import com.codebusters.bankaccountkata.domain.port.BankAccountPort;
 import com.codebusters.bankaccountkata.persistence.repository.AccountRepository;
@@ -26,24 +27,28 @@ public class BankAccountAdapter implements BankAccountPort {
     }
 
     @Override
-    public History save(Transaction transaction) {
+    public Operation save(Transaction transaction) throws BankAccountDepositException {
         LOCK.lock();
-        History history;
+        Operation operation;
+        boolean clientExist;
         try {
+            clientExist = accountRepository.contains(transaction.getClientId());
             accountRepository.deposit(transaction.getAmount(), transaction.getClientId());
             int balance = accountRepository.findByAccountId(transaction.getClientId()).getBalance();
-            history = History.builder()
+            operation = Operation.builder()
                     .amount(transaction.getAmount())
                     .balance(balance)
                     .operationDate(Instant.now())
-                    .clientId(transaction.getClientId())
-                    .operation(Operation.DEPOSIT)
+                    .operation(OperationType.DEPOSIT)
                     .build();
-            historyRepository.save(history);
+            historyRepository.save(transaction.getClientId(), operation);
         }
         finally {
             LOCK.unlock();
         }
-        return history;
+        if(!clientExist) {
+            throw new BankAccountDepositException("client doesn't exist so we create a new Account with the client id given", operation);
+        }
+        return operation;
     }
 }

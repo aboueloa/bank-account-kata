@@ -1,17 +1,21 @@
 package com.codebusters.bankaccountkata.persistence.repository;
 
-import com.codebusters.bankaccountkata.domain.model.History;
-import com.codebusters.bankaccountkata.domain.model.Transaction;
+import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.model.OperationType;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class HistoryRepository {
-    public static List<History> HISTORY = new ArrayList<>();
+    private static final Map<String, List<Operation>> HISTORY = new HashMap<>();
 
-    public void save(History history) {
-        HISTORY.add(history);
+    public void save(String clientId, Operation operation) {
+        var operations = HISTORY.getOrDefault(clientId, new ArrayList<>());
+        operations.add(operation);
+        HISTORY.put(clientId, operations);
     }
 }

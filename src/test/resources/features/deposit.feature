@@ -5,5 +5,5 @@ Feature: deposit feature
       | ayman.aboueloula | 1000   |
     When the user make a deposit
     Then we return the following history
-      | clientId         | amount | operation| operationDate              | balance |
-      | ayman.aboueloula | 1000   | DEPOSIT  | 2022-01-02T00:00:00.000Z   | 2000    |
+      | amount | operation| operationDate              | balance |
+      | 1000   | DEPOSIT  | 2022-01-02T00:00:00.000Z   | 2000    |
