@@ -14,6 +14,6 @@ public class BankAccountService {
     }
 
     public Operation withdrawal(Transaction transaction) {
-        return null;
+        return bankAccountPort.withdrawMoney(transaction);
     }
 }
