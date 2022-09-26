@@ -1,4 +1,4 @@
-package com.codebusters.bankaccountkata.api.controller.ExceptionHandler;
+package com.codebusters.bankaccountkata.api.ExceptionHandler;
 
 import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
 import com.codebusters.bankaccountkata.domain.model.Operation;

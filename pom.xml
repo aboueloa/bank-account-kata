@@ -80,6 +80,11 @@
 			<version>${cucumber.vesion}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>5.3.16</version>
+		</dependency>
 
 	</dependencies>
 

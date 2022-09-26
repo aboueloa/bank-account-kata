@@ -1,4 +1,4 @@
-package com.codebusters.bankaccountkata.api.controller.dto;
+package com.codebusters.bankaccountkata.api.dto;
 
 import lombok.Data;
 
