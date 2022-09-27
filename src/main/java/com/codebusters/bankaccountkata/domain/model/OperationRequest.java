@@ -5,14 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Operation {
-     private int amount;
-     private OperationType operation;
-     private Instant operationDate;
+@Builder
+public class OperationRequest {
+    private String clientId;
+    private int amount;
 }

@@ -1,11 +1,10 @@
 package com.codebusters.bankaccountkata.IT.steps;
 
-import com.codebusters.bankaccountkata.api.dto.OperationRequest;
-import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
+import com.codebusters.bankaccountkata.api.dto.OperationRequestDTO;
+import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
-import com.codebusters.bankaccountkata.domain.model.Transaction;
+import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -22,22 +21,22 @@ public class DepositSteps {
 
     private Operation expectedOperation;
     private Operation actualOperation;
-    private OperationRequest operationRequest;
+    private OperationRequestDTO operationRequestDTO;
 
 
     @Given("^the following operation$")
-    public void givenTheFollowingTransaction(OperationRequest transaction) {
-        this.operationRequest = transaction;
+    public void givenTheFollowingTransaction(OperationRequestDTO transaction) {
+        this.operationRequestDTO = transaction;
     }
 
     @When("^the user make a deposit$")
     public void whenTheUserMakeADeposit() {
-        testRestTemplate.postForEntity("/api/bank-operation/deposit", operationRequest, OperationRequest.class);
+        testRestTemplate.postForEntity("/api/bank-operation/deposit", operationRequestDTO, OperationRequestDTO.class);
     }
 
     @Then("^we return the following history$")
-    public void thenWeReturnTheFollowingHistory(Operation operation) throws BankAccountDepositException {
-        actualOperation = bankAccountService.makeDeposit(new Transaction(operationRequest.getClientId(), operation.getAmount()));
+    public void thenWeReturnTheFollowingHistory(Operation operation) throws BankAccountException {
+        actualOperation = bankAccountService.makeDeposit(new OperationRequest(operationRequestDTO.getClientId(), operation.getAmount()));
         expectedOperation = operation;
         validateDeposit();
     }
@@ -45,6 +44,5 @@ public class DepositSteps {
     private void validateDeposit() {
         Assertions.assertEquals(expectedOperation.getOperation(), actualOperation.getOperation());
         Assertions.assertEquals(expectedOperation.getAmount(), actualOperation.getAmount());
-        Assertions.assertEquals(expectedOperation.getBalance(), actualOperation.getBalance());
     }
 }

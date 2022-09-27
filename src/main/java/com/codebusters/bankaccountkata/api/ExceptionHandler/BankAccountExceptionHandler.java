@@ -1,7 +1,6 @@
 package com.codebusters.bankaccountkata.api.ExceptionHandler;
 
-import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
-import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -25,8 +24,8 @@ public class BankAccountExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(BankAccountDepositException.class)
-    public ResponseEntity<Operation> handleDepositException(BankAccountDepositException ex) {
-        return new ResponseEntity<>(ex.getOperation(), HttpStatus.CREATED);
+    @ExceptionHandler(BankAccountException.class)
+    public ResponseEntity<String> handleWithdrawalException(BankAccountException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

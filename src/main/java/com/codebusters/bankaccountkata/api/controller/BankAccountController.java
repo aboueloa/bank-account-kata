@@ -1,9 +1,9 @@
 package com.codebusters.bankaccountkata.api.controller;
 
-import com.codebusters.bankaccountkata.api.dto.OperationRequest;
-import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
+import com.codebusters.bankaccountkata.api.dto.OperationRequestDTO;
+import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
-import com.codebusters.bankaccountkata.domain.model.Transaction;
+import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,20 +25,22 @@ public class BankAccountController {
     }
 
     @PostMapping(path = "/deposit", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Operation> moneyDeposit(@Valid @RequestBody OperationRequest operationRequest) throws BankAccountDepositException {
-        log.info("Making a deposit");
-        return ResponseEntity.ok(bankAccountService.makeDeposit(Transaction.builder()
-                .amount(operationRequest.getAmount())
-                .clientId(operationRequest.getClientId())
-                .build()));
+    public ResponseEntity<Operation> moneyDeposit(@Valid @RequestBody OperationRequestDTO operationRequestDTO) throws BankAccountException {
+        log.info("Making a deposit for {}", operationRequestDTO);
+        var transaction = OperationRequest.builder()
+                .amount(operationRequestDTO.getAmount())
+                .clientId(operationRequestDTO.getClientId())
+                .build();
+        var operation = bankAccountService.makeDeposit(transaction);
+        return ResponseEntity.ok(operation);
     }
 
     @PostMapping(path= "/withdrawal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Operation> moneyWithdrawal(@Valid @RequestBody OperationRequest operationRequest) {
+    public ResponseEntity<Operation> moneyWithdrawal(@Valid @RequestBody OperationRequestDTO operationRequestDTO) throws BankAccountException {
         log.info("withdrawal of money");
-        return ResponseEntity.ok(bankAccountService.withdrawal(Transaction.builder()
-                .amount(operationRequest.getAmount())
-                .clientId(operationRequest.getClientId())
+        return ResponseEntity.ok(bankAccountService.withdrawal(OperationRequest.builder()
+                .amount(operationRequestDTO.getAmount())
+                .clientId(operationRequestDTO.getClientId())
                 .build()));
     }
 }

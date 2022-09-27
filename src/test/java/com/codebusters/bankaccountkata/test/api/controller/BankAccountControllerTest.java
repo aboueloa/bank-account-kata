@@ -1,13 +1,14 @@
 package com.codebusters.bankaccountkata.test.api.controller;
 
 import com.codebusters.bankaccountkata.api.controller.BankAccountController;
-import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
+import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
 import com.codebusters.bankaccountkata.domain.model.OperationType;
-import com.codebusters.bankaccountkata.domain.model.Transaction;
+import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.Is;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,7 +35,7 @@ public class BankAccountControllerTest {
 
     private static final Operation WITHDRAWAL_OPERATION = Operation.builder().operation(OperationType.WITHDRAWAL).amount(AMOUNT).build();
 
-    private static final Transaction TRANSACTION = new Transaction(CLIENT_ID, AMOUNT);
+    private static final OperationRequest OPERATION_REQUEST = new OperationRequest(CLIENT_ID, AMOUNT);
     @MockBean
     private BankAccountService bankAccountService;
 
@@ -61,20 +62,19 @@ public class BankAccountControllerTest {
 
     @Test
     public void when_post_request_to_deposit_and_new_client_is_created() throws Exception {
-        when(bankAccountService.makeDeposit(TRANSACTION)).thenThrow(new BankAccountDepositException("client doesn't exist so we create a new Account with the client id given",
-                Operation.builder().operation(OperationType.DEPOSIT).amount(AMOUNT).build()));
+        when(bankAccountService.makeDeposit(OPERATION_REQUEST)).thenThrow(new BankAccountException("client doesn't exist"));
         String operationRequest = "{\"clientId\": \"clientId\", \"amount\" : 100}";
-        mockMvc.perform(MockMvcRequestBuilders.post(API_BANK_ACCOUNT_DEPOSIT)
+        var mockRes = mockMvc.perform(MockMvcRequestBuilders.post(API_BANK_ACCOUNT_DEPOSIT)
                         .content(operationRequest)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE));
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn();
+        Assertions.assertEquals("client doesn't exist", mockRes.getResponse().getContentAsString());
     }
 
     @Test
     public void when_post_request_to_withdrawal() throws Exception {
-        when(bankAccountService.withdrawal(TRANSACTION)).thenReturn(WITHDRAWAL_OPERATION);
+        when(bankAccountService.withdrawal(OPERATION_REQUEST)).thenReturn(WITHDRAWAL_OPERATION);
         String operationRequest = "{\"clientId\": \"clientId\", \"amount\" : 100}";
         var mockRes = mockMvc.perform(MockMvcRequestBuilders.post(API_BANK_ACCOUNT_WITHDRAWAL)
                         .content(operationRequest)

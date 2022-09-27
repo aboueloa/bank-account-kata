@@ -1,11 +1,11 @@
 package com.codebusters.bankaccountkata.domain.port;
 
-import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
+import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
-import com.codebusters.bankaccountkata.domain.model.Transaction;
+import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 
 public interface BankAccountPort {
-    Operation save(Transaction transaction) throws BankAccountDepositException;
+    Operation save(OperationRequest operationRequest) throws BankAccountException;
 
-    Operation withdrawMoney(Transaction transactionWhenClientIdNotNull);
+    Operation withdrawMoney(OperationRequest operationRequest) throws BankAccountException;
 }

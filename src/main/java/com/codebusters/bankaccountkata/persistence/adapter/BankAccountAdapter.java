@@ -1,12 +1,11 @@
 package com.codebusters.bankaccountkata.persistence.adapter;
 
-import com.codebusters.bankaccountkata.domain.exception.BankAccountDepositException;
+import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.model.OperationType;
-import com.codebusters.bankaccountkata.domain.model.Transaction;
 import com.codebusters.bankaccountkata.domain.port.BankAccountPort;
-import com.codebusters.bankaccountkata.persistence.repository.AccountRepository;
-import com.codebusters.bankaccountkata.persistence.repository.HistoryRepository;
+import com.codebusters.bankaccountkata.persistence.repository.OperationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,45 +14,70 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class BankAccountAdapter implements BankAccountPort {
-    private final AccountRepository accountRepository;
-    private final HistoryRepository historyRepository;
+    private final OperationRepository operationRepository;
 
     private static final ReentrantLock LOCK = new ReentrantLock();
 
     @Autowired
-    public BankAccountAdapter(AccountRepository accountRepository, HistoryRepository historyRepository) {
-        this.accountRepository = accountRepository;
-        this.historyRepository = historyRepository;
+    public BankAccountAdapter(OperationRepository operationRepository) {
+        this.operationRepository = operationRepository;
     }
 
     @Override
-    public Operation save(Transaction transaction) throws BankAccountDepositException {
+    public Operation save(OperationRequest operationRequest) throws BankAccountException {
+        checkIfClientExist(operationRequest.getClientId());
         LOCK.lock();
-        Operation operation;
-        boolean clientExist;
         try {
-            clientExist = accountRepository.contains(transaction.getClientId());
-            accountRepository.deposit(transaction.getAmount(), transaction.getClientId());
-            int balance = accountRepository.findByAccountId(transaction.getClientId()).getBalance();
-            operation = Operation.builder()
-                    .amount(transaction.getAmount())
-                    .balance(balance)
+            var operation = Operation.builder()
+                    .amount(operationRequest.getAmount())
                     .operationDate(Instant.now())
                     .operation(OperationType.DEPOSIT)
                     .build();
-            historyRepository.save(transaction.getClientId(), operation);
+            operationRepository.save(operationRequest.getClientId(), operation);
+            return operation;
         }
         finally {
             LOCK.unlock();
         }
-        if(!clientExist) {
-            throw new BankAccountDepositException("client doesn't exist so we create a new Account with the client id given", operation);
-        }
-        return operation;
     }
 
     @Override
-    public Operation withdrawMoney(Transaction transactionWhenClientIdNotNull) {
-        return null;
+    public Operation withdrawMoney(OperationRequest operationRequest) throws BankAccountException {
+        checkIfClientExist(operationRequest.getClientId());
+        LOCK.lock();
+        try {
+            int balance = operationRepository.computeBalance(operationRequest.getClientId());
+            if(balance < operationRequest.getAmount()) {
+                throw new BankAccountException("insufficient balance");
+            }
+            var operation = Operation.builder()
+                    .amount(-operationRequest.getAmount())
+                    .operationDate(Instant.now())
+                    .operation(OperationType.WITHDRAWAL)
+                    .build();
+            operationRepository.save(operationRequest.getClientId(), operation);
+            return operation;
+        }
+        finally {
+            LOCK.unlock();
+        }
+    }
+
+    private void checkIfClientExist(String clientId) throws BankAccountException {
+        if(!operationRepository.contains(clientId)) {
+            throw new BankAccountException("Client doesn't exist");
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
