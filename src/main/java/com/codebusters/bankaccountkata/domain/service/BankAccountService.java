@@ -2,6 +2,7 @@ package com.codebusters.bankaccountkata.domain.service;
 
 import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.model.OperationHistory;
 import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.port.BankAccountPort;
 import lombok.AllArgsConstructor;
@@ -18,5 +19,9 @@ public class BankAccountService {
 
     public Operation withdrawal(OperationRequest operationRequest) throws BankAccountException {
         return bankAccountPort.withdrawMoney(operationRequest);
+    }
+
+    public OperationHistory getHistory(String clientId) {
+        return null;
     }
 }

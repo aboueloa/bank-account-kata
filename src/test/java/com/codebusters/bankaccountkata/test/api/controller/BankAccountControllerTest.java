@@ -3,9 +3,12 @@ package com.codebusters.bankaccountkata.test.api.controller;
 import com.codebusters.bankaccountkata.api.controller.BankAccountController;
 import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.model.OperationHistory;
 import com.codebusters.bankaccountkata.domain.model.OperationType;
 import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +33,8 @@ public class BankAccountControllerTest {
     private static final String API_BANK_ACCOUNT_DEPOSIT = "/api/bank-operation/deposit";
 
     private static final String API_BANK_ACCOUNT_WITHDRAWAL = "/api/bank-operation/withdrawal";
+    private static final String API_BANK_ACCOUNT_HISTORY = "/api/bank-operation/history/clientId";
+
 
     private static final String CLIENT_ID = "clientId";
     private static final int AMOUNT = 100;
@@ -36,6 +43,7 @@ public class BankAccountControllerTest {
     private static final Operation WITHDRAWAL_OPERATION = Operation.builder().operation(OperationType.WITHDRAWAL).amount(AMOUNT).build();
 
     private static final OperationRequest OPERATION_REQUEST = new OperationRequest(CLIENT_ID, AMOUNT);
+    public static final OperationHistory OPERATIONS = OperationHistory.builder().balance(0).operations(new ArrayList<>()).build();
     @MockBean
     private BankAccountService bankAccountService;
 
@@ -83,6 +91,19 @@ public class BankAccountControllerTest {
                 .andReturn();
         String actualRes = mockRes.getResponse().getContentAsString();
         String expectedRes = objectMapper.writeValueAsString(WITHDRAWAL_OPERATION);
+        assertThat(expectedRes).isEqualToIgnoringWhitespace(actualRes);
+    }
+
+    @Test
+    public void when_post_request_to_getHistory() throws Exception {
+        when(bankAccountService.getHistory(CLIENT_ID)).thenReturn(OPERATIONS);
+        var mockRes = mockMvc.perform(MockMvcRequestBuilders.get(API_BANK_ACCOUNT_HISTORY)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        String actualRes = mockRes.getResponse().getContentAsString();
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        String expectedRes = objectMapper.writeValueAsString(OPERATIONS);
         assertThat(expectedRes).isEqualToIgnoringWhitespace(actualRes);
     }
 
