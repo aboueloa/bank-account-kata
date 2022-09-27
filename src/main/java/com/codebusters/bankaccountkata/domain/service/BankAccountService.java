@@ -22,6 +22,6 @@ public class BankAccountService {
     }
 
     public OperationHistory getOperationHistory(String clientId) {
-        return null;
+        return bankAccountPort.getOperationHistory(clientId);
     }
 }
