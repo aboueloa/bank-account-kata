@@ -2,6 +2,7 @@ package com.codebusters.bankaccountkata.persistence.adapter;
 
 import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.model.OperationHistory;
 import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.model.OperationType;
 import com.codebusters.bankaccountkata.domain.port.BankAccountPort;
@@ -61,6 +62,11 @@ public class BankAccountAdapter implements BankAccountPort {
         finally {
             LOCK.unlock();
         }
+    }
+
+    @Override
+    public OperationHistory getOperationHistory(String clientId) {
+        return null;
     }
 
     private void checkIfClientExist(String clientId) throws BankAccountException {

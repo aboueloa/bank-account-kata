@@ -21,7 +21,7 @@ public class BankAccountService {
         return bankAccountPort.withdrawMoney(operationRequest);
     }
 
-    public OperationHistory getHistory(String clientId) {
+    public OperationHistory getOperationHistory(String clientId) {
         return null;
     }
 }

@@ -2,6 +2,7 @@ package com.codebusters.bankaccountkata.test.domain.service;
 
 import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
+import com.codebusters.bankaccountkata.domain.model.OperationHistory;
 import com.codebusters.bankaccountkata.domain.model.OperationType;
 import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.port.BankAccountPort;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
+import java.util.ArrayList;
 
 import static org.mockito.Mockito.when;
 
@@ -31,7 +33,7 @@ public class BankAccountServiceTest {
     private static final OperationRequest OPERATION_REQUEST_WHEN_CLIENT_ID_NOT_NULL = OperationRequest.builder().clientId(CLIENT_ID).amount(AMOUNT).build();
     private static final Operation OPERATION_WHEN_OPERATION_IS_WITHDRAWAL = Operation.builder().amount(AMOUNT).operation(OperationType.WITHDRAWAL).operationDate(NOW).build();
 
-
+    private static final OperationHistory OPERATIONS = OperationHistory.builder().balance(0).operations(new ArrayList<>()).build();
 
     @Test
     public void test_make_deposit_while_client_id_not_null() throws BankAccountException {
@@ -49,5 +51,14 @@ public class BankAccountServiceTest {
         var actualOperation = bankAccountService.withdrawal(OPERATION_REQUEST_WHEN_CLIENT_ID_NOT_NULL);
 
         Assertions.assertEquals(OPERATION_WHEN_OPERATION_IS_WITHDRAWAL, actualOperation);
+    }
+
+    @Test
+    public void test_get_operations_history() {
+        when(bankAccountPort.getOperationHistory(CLIENT_ID)).thenReturn(OPERATIONS);
+
+        var actualOperation = bankAccountService.getOperationHistory(CLIENT_ID);
+
+        Assertions.assertEquals(OPERATIONS, actualOperation);
     }
 }

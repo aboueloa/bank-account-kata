@@ -43,7 +43,7 @@ public class BankAccountControllerTest {
     private static final Operation WITHDRAWAL_OPERATION = Operation.builder().operation(OperationType.WITHDRAWAL).amount(AMOUNT).build();
 
     private static final OperationRequest OPERATION_REQUEST = new OperationRequest(CLIENT_ID, AMOUNT);
-    public static final OperationHistory OPERATIONS = OperationHistory.builder().balance(0).operations(new ArrayList<>()).build();
+    private static final OperationHistory OPERATIONS = OperationHistory.builder().balance(0).operations(new ArrayList<>()).build();
     @MockBean
     private BankAccountService bankAccountService;
 
@@ -96,7 +96,7 @@ public class BankAccountControllerTest {
 
     @Test
     public void when_post_request_to_getHistory() throws Exception {
-        when(bankAccountService.getHistory(CLIENT_ID)).thenReturn(OPERATIONS);
+        when(bankAccountService.getOperationHistory(CLIENT_ID)).thenReturn(OPERATIONS);
         var mockRes = mockMvc.perform(MockMvcRequestBuilders.get(API_BANK_ACCOUNT_HISTORY)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
