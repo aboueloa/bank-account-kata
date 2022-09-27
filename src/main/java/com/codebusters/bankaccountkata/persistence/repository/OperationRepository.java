@@ -26,4 +26,8 @@ public class OperationRepository {
     public int computeBalance(String clientId) {
         return HISTORY.get(clientId).stream().reduce(0, (partialBalance, operation) -> partialBalance + operation.getAmount(), Integer::sum);
     }
+
+    public List<Operation> getOperation(String clientId) {
+        return HISTORY.get(clientId);
+    }
 }

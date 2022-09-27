@@ -1,4 +1,5 @@
 Feature: withdrawal feature
+  @Withdrawal
   Scenario: A client make a withdrawal from his account
     Given the following withdrawal operation
       | clientId         | amount |

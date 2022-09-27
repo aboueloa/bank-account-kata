@@ -1,4 +1,5 @@
 Feature: deposit feature
+  @Deposit
   Scenario: A client make a deposit to his account
     Given the following deposit operation
       | clientId         | amount |

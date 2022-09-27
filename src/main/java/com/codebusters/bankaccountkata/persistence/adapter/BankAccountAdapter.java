@@ -65,8 +65,18 @@ public class BankAccountAdapter implements BankAccountPort {
     }
 
     @Override
-    public OperationHistory getOperationHistory(String clientId) {
-        return null;
+    public OperationHistory getOperationHistory(String clientId) throws BankAccountException {
+        checkIfClientExist(clientId);
+        LOCK.lock();
+        try{
+            int balance = operationRepository.computeBalance(clientId);
+            var operations = operationRepository.getOperation(clientId);
+            return OperationHistory.builder().operations(operations).balance(balance).build();
+        }
+        finally {
+            LOCK.unlock();
+        }
+
     }
 
     private void checkIfClientExist(String clientId) throws BankAccountException {

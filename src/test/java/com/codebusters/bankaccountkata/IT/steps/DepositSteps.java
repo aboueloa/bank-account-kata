@@ -5,6 +5,7 @@ import com.codebusters.bankaccountkata.domain.exception.BankAccountException;
 import com.codebusters.bankaccountkata.domain.model.Operation;
 import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
+import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -23,7 +24,10 @@ public class DepositSteps {
     private Operation actualOperation;
     private OperationRequestDTO operationRequestDTO;
 
-
+    @After(value = "@Deposit")
+    public void after() throws BankAccountException {
+        bankAccountService.withdrawal(new OperationRequest("ayman.aboueloula", 1000));
+    }
     @Given("^the following deposit operation$")
     public void givenTheFollowingTransaction(OperationRequestDTO transaction) {
         this.operationRequestDTO = transaction;
@@ -31,12 +35,11 @@ public class DepositSteps {
 
     @When("^the user make a deposit$")
     public void whenTheUserMakeADeposit() {
-        testRestTemplate.postForEntity("/api/bank-operation/deposit", operationRequestDTO, OperationRequestDTO.class);
+        actualOperation = testRestTemplate.postForEntity("/api/bank-operation/deposit", operationRequestDTO, Operation.class).getBody();
     }
 
     @Then("^we return the following deposit operation")
-    public void thenWeReturnTheFollowingOperation(Operation operation) throws BankAccountException {
-        actualOperation = bankAccountService.makeDeposit(new OperationRequest(operationRequestDTO.getClientId(), operation.getAmount()));
+    public void thenWeReturnTheFollowingOperation(Operation operation) {
         expectedOperation = operation;
         validateDeposit();
     }

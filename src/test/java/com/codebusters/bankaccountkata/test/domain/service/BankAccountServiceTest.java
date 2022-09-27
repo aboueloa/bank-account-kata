@@ -54,7 +54,7 @@ public class BankAccountServiceTest {
     }
 
     @Test
-    public void test_get_operations_history() {
+    public void test_get_operations_history() throws BankAccountException {
         when(bankAccountPort.getOperationHistory(CLIENT_ID)).thenReturn(OPERATIONS);
 
         var actualOperation = bankAccountService.getOperationHistory(CLIENT_ID);

@@ -6,6 +6,8 @@ import com.codebusters.bankaccountkata.domain.model.Operation;
 import com.codebusters.bankaccountkata.domain.model.OperationRequest;
 import com.codebusters.bankaccountkata.domain.model.OperationType;
 import com.codebusters.bankaccountkata.domain.service.BankAccountService;
+import io.cucumber.java.Before;
+import io.cucumber.java.BeforeStep;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -25,6 +27,11 @@ public class WithdrawalSteps {
     private Operation actualOperation;
     private OperationRequestDTO operationRequestDTO;
 
+    @Before(value = "@Withdrawal")
+    public void setUp() throws BankAccountException {
+        bankAccountService.makeDeposit(new OperationRequest("ayman.aboueloula", 1000));
+    }
+
     @Given("^the following withdrawal operation$")
     public void givenTheFollowingTransaction(OperationRequestDTO transaction) {
         this.operationRequestDTO = transaction;
@@ -32,13 +39,13 @@ public class WithdrawalSteps {
 
     @When("^the user make a withdrawal$")
     public void whenTheUserMakeAWithdrawal() {
-        testRestTemplate.postForEntity("/api/bank-operation/withdrawal", operationRequestDTO, OperationRequestDTO.class);
+        var res = testRestTemplate.postForEntity("/api/bank-operation/withdrawal", operationRequestDTO, Operation.class);
+        actualOperation = res.getBody();
     }
 
     @Then("^we return the following withdrawal operation")
-    public void thenWeReturnTheFollowingOperation(Operation operation) throws BankAccountException {
-        actualOperation = bankAccountService.withdrawal(new OperationRequest(operationRequestDTO.getClientId(), operation.getAmount()));
-        expectedOperation = Operation.builder().amount(-operation.getAmount()).operation(OperationType.WITHDRAWAL).build();
+    public void thenWeReturnTheFollowingOperation(Operation operation) {
+        expectedOperation = Operation.builder().amount(operation.getAmount()).operation(OperationType.WITHDRAWAL).build();
         validateDeposit();
     }
 

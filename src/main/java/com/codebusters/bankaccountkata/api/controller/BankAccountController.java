@@ -47,7 +47,7 @@ public class BankAccountController {
     }
 
     @GetMapping(path = "/history/{client-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OperationHistory> getOperationHistory(@PathVariable("client-id") @NotBlank String clientId) {
+    public ResponseEntity<OperationHistory> getOperationHistory(@PathVariable("client-id") @NotBlank String clientId) throws BankAccountException {
         return ResponseEntity.ok(bankAccountService.getOperationHistory(clientId));
     }
 }

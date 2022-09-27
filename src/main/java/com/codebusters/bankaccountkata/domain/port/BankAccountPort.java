@@ -10,5 +10,5 @@ public interface BankAccountPort {
 
     Operation withdrawMoney(OperationRequest operationRequest) throws BankAccountException;
 
-    OperationHistory getOperationHistory(String clientId);
+    OperationHistory getOperationHistory(String clientId) throws BankAccountException;
 }
