@@ -5,14 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.io.Serializable;
+import java.util.List;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Operation {
-     private int amount;
-     private OperationType operation;
-     private Instant operationDate;
+@Builder
+public class OperationHistory {
+    private List<Operation> operations;
+    private int balance;
 }
