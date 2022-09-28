@@ -5,7 +5,7 @@
 
 ## This application offers 3 Endpoints allowing:
 1. Make a deposit operation
- ```json
+ ```
  POST /api/bank-operation/deposit
  ```
 1.1. if the amount > 0, clientId not blank and the client exist
@@ -41,14 +41,14 @@ Response:(Http status 400)
 1.3. if the client doesn't exist:
 
 Response: (Http status 404)
-```json
+```
   Client does not exist
 ```
 
 
 2. Make a withdrawal
 
- ```json 
+ ```
  POST /api/bank-operation/withdrawal
  ```
 2.1. if the amount > 0, clientId not blank and the client exist
@@ -75,13 +75,13 @@ Response : (Http status 200)
 
 Response : (Http status 400)
 
-```json
+```
 insufficient balance
 ```
 
 3. Check history of operations:
 
-   ```json  
+   ```
    GET /api/bank-operation/history/{clientId}
    ```
 
@@ -124,4 +124,10 @@ The application is tested using Junit5, mockito and cucumber.
 
 ## Technical specifications:
 1. We used a hexagonal architecture.
-2. I preferred to store only the transaction history, to ensure that the deposit and withdrawal operations are transactional, and to calculate for each deposit or historical request transaction the new balance, which will increase the execution time, but in real situation using database, we could use two repositories, operationHistory(already implemented) and the account repository, and to annotate the services with @Transctionnal
+2. I preferred to store only the transaction history, to ensure that the deposit and withdrawal operations are transactional, and to calculate for each deposit or historical request transaction the new balance, which will increase the execution time, but in real situation using database, we could use two repositories, operationHistory(already implemented) and the account repository, and to annotate the services with @Transactional
+
+## Application launch
+```
+mvn clean install
+```
+start the spring boot application via intellij(or via cmd line)
